@@ -105,6 +105,10 @@ class DetectBots(Watcher):
                 self.time_threshold,
             )
 
+            self.notify_channel(
+                message.author.id, list(self.data[message.author.id].keys())
+            )
+
             # message.author.timeout(
             #     duration=600,
             #     reason=f"Detected as bot by Bot Catcher plugin, sent messages to {len(self.data[message.author.id].keys())} channels within {self.time_threshold} seconds",
@@ -117,7 +121,7 @@ class DetectBots(Watcher):
                     channel_id,
                 )
 
-                self.client.get_channel(channel_id).delete_messages(
+                await self.client.get_channel(channel_id).delete_messages(
                     [self.data[message.author.id][channel_id]]
                 )
 
