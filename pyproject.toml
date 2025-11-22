@@ -1,0 +1,38 @@
+[build-system]
+    requires = ["hatchling"]
+    build-backend = "hatchling.build"
+
+[project]
+    name = "versecbot_bot_catcher"
+    version = "0.3.0"
+    authors = [{ name = "Museus", email = "versecbot@museus.dev" }]
+    description = "VerSecBot plugin to detect and timeout spam bots"
+    readme = "README.md"
+    requires-python = ">=3.8"
+    classifiers = [
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+    ]
+
+    dependencies = [
+        "discord-py>=2,<3",
+        "pydantic_settings>=2,<3",
+        "versecbot_interface@git+https://github.com/Museus/versecbot-interface.git@v0.3",
+    ]
+
+    license = "MIT"
+    license-files = ["LICEN[CS]E*"]
+
+    [project.urls]
+        Homepage = "https://github.com/Museus/versecbot-BotCatcher"
+        Issues = "https://github.com/Museus/versecbot-BotCatcher/issues"
+
+
+    [project.entry-points.'versecbot.plugins']
+        personal_bests = 'versecbot_bot_catcher:BotCatcherPlugin'
+
+    [project.optional-dependencies]
+        qa = ["ruff", "pytest", "pytest-mock", "tomli"]
+
+[tool.hatch.metadata]
+    allow-direct-references = true
