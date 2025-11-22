@@ -46,7 +46,7 @@ class DetectBots(Watcher):
         """Purge old entries from the data dictionary."""
         for target_user_id in target_user_ids:
             channels = self.data[target_user_id]
-            for channel_id in channels.keys():
+            for channel_id in list(channels.keys()):
                 message: Message = channels[channel_id]
                 if message.created_at < cutoff_time:
                     logger.debug(
@@ -114,7 +114,7 @@ class DetectBots(Watcher):
             #     reason=f"Detected as bot by Bot Catcher plugin, sent messages to {len(self.data[message.author.id].keys())} channels within {self.time_threshold} seconds",
             # )
 
-            for channel_id in self.data[message.author.id].keys():
+            for channel_id in list(self.data[message.author.id].keys()):
                 logger.info(
                     "Deleting message from user %s in channel %s",
                     message.author.id,
