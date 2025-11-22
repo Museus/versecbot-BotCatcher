@@ -12,12 +12,10 @@ logger = getLogger("discord").getChild("versecbot.plugins.bot_catcher.detect_bot
 
 class DetectBots(Watcher):
     client: Client
-    channels: list[TextChannel]
     name: str
 
     def __init__(self, client: Client, settings: DetectBotSettings):
         super().__init__(settings)
-        logger.debug("Getting emoji with id %s", settings.emoji_id)
         self.client = client
         self.channel_threshold = settings.channel_threshold
         self.time_threshold = settings.time_threshold
@@ -105,10 +103,10 @@ class DetectBots(Watcher):
                 self.time_threshold,
             )
 
-            message.author.timeout(
-                duration=600,
-                reason=f"Detected as bot by Bot Catcher plugin, sent messages to {len(self.data[message.author.id].keys())} channels within {self.time_threshold} seconds",
-            )
+            # message.author.timeout(
+            #     duration=600,
+            #     reason=f"Detected as bot by Bot Catcher plugin, sent messages to {len(self.data[message.author.id].keys())} channels within {self.time_threshold} seconds",
+            # )
 
             for channel_id in self.data[message.author.id].keys():
                 logger.info(
