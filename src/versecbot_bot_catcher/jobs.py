@@ -1,8 +1,8 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from logging import getLogger
 
-from discord import Client, Message, TextChannel
+from discord import Client, Message
 from versecbot_interface import Watcher
 
 from .settings import DetectBotSettings
@@ -38,7 +38,7 @@ class DetectBots(Watcher):
         self.data[message.author.id][message.channel.id] = message
 
     def purge_old_entries(self, user_id: int = None):
-        cutoff_time = datetime.now() - self.time_threshold
+        cutoff_time = datetime.now() - timedelta(seconds=self.time_threshold)
 
         target_user_ids = [user_id] if user_id else list(self.data.keys())
         """Purge old entries from the data dictionary."""
