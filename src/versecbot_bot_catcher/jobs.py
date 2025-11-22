@@ -72,10 +72,10 @@ class DetectBots(Watcher):
 
         return channel_count >= self.channel_threshold
 
-    def notify_channel(self, user_id: int, channel_ids: list[int]):
+    async def notify_channel(self, user_id: int, channel_ids: list[int]):
         """Notify notification_channel about a detected bot."""
         channel = self.client.get_channel(self.notification_channel_id)
-        channel.send(
+        await channel.send(
             f"User <@{user_id}> detected as bot, sent messages to {len(channel_ids)} channels within {self.time_threshold} seconds:\n"
             + ", ".join(f"<#{channel_id}>\n" for channel_id in channel_ids)
         )
@@ -105,7 +105,7 @@ class DetectBots(Watcher):
                 self.time_threshold,
             )
 
-            self.notify_channel(
+            await self.notify_channel(
                 message.author.id, list(self.data[message.author.id].keys())
             )
 
@@ -121,9 +121,11 @@ class DetectBots(Watcher):
                     channel_id,
                 )
 
-                await self.client.get_channel(channel_id).delete_messages(
-                    [self.data[message.author.id][channel_id]]
-                )
+                last_message = self.data[message.author.id].get(channel_id)
+                if last_message:
+                    await self.client.get_channel(channel_id).delete_messages(
+                        [last_message]
+                    )
 
                 logger.debug("Deleting stored data for user %s", message.author.id)
                 del self.data[message.author.id]
