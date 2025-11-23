@@ -21,6 +21,7 @@ class DetectBots(Watcher):
         self.channel_threshold = settings.channel_threshold
         self.time_threshold = settings.time_threshold
         self.notification_channel_id = settings.notification_channel_id
+        self.timeout_seconds = settings.timeout_seconds
         self.data = defaultdict(dict)
         self.name = "watcher_detect_bots"
 
@@ -105,29 +106,62 @@ class DetectBots(Watcher):
                 self.time_threshold,
             )
 
-            await self.notify_channel(
-                message.author.id, list(self.data[message.author.id].values())
-            )
-
-            timeout_until = datetime.now(tz=timezone.utc) + timedelta(minutes=10)
-            await message.author.timeout(
-                timeout_until,
-                reason="Detected as bot by Bot Catcher plugin",
-            )
-
-            for channel_id in list(self.data[message.author.id].keys()):
-                logger.info(
-                    "Deleting message %s from %s <%s> in channel %s",
-                    message.id,
+            try:
+                await self.notify_channel(
+                    message.author.id, list(self.data[message.author.id].values())
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to notify channel %s about user %s <%s>",
+                    self.notification_channel_id,
                     message.author.name,
                     message.author.id,
-                    message.channel.id,
                 )
 
-                last_message = self.data[message.author.id].get(channel_id)
-                if last_message:
-                    await self.client.get_channel(channel_id).delete_messages(
-                        [last_message]
+            try:
+                logger.info(
+                    "Timing out user %s <%s> for %s seconds",
+                    message.author.name,
+                    message.author.id,
+                    self.timeout_seconds,
+                )
+
+                timeout_until = datetime.now(tz=timezone.utc) + timedelta(
+                    seconds=self.timeout_seconds
+                )
+                await message.author.timeout(
+                    timeout_until,
+                    reason="Detected as bot by Bot Catcher plugin",
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to timeout user %s <%s>",
+                    message.author.name,
+                    message.author.id,
+                )
+
+            for channel_id in list(self.data[message.author.id].keys()):
+                try:
+                    logger.info(
+                        "Deleting message %s from %s <%s> in channel %s",
+                        message.id,
+                        message.author.name,
+                        message.author.id,
+                        message.channel.id,
+                    )
+
+                    last_message = self.data[message.author.id].get(channel_id)
+                    if last_message:
+                        await self.client.get_channel(channel_id).delete_messages(
+                            [last_message]
+                        )
+                except Exception:
+                    logger.exception(
+                        "Failed to delete message %s from %s <%s> in channel %s",
+                        message.id,
+                        message.author.name,
+                        message.author.id,
+                        message.channel.id,
                     )
 
             logger.debug("Deleting stored data for user %s", message.author.id)

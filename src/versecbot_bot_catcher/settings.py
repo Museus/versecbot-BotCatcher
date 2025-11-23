@@ -6,6 +6,7 @@ class DetectBotSettings(WatcherSettings):
     notification_channel_id: int
     channel_threshold: int
     time_threshold: int
+    timeout_seconds: int
 
 
 class BotCatchersSettings(PluginSettings):
