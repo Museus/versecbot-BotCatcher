@@ -109,8 +109,9 @@ class DetectBots(Watcher):
                 message.author.id, list(self.data[message.author.id].values())
             )
 
+            timeout_until = datetime.now(tz=timezone.utc) + timedelta(minutes=10)
             message.author.timeout(
-                until=datetime.now(tz=timezone.utc) + timedelta(minutes=10),
+                timeout_until,
                 reason="Detected as bot by Bot Catcher plugin",
             )
 
