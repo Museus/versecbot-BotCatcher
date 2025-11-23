@@ -110,7 +110,7 @@ class DetectBots(Watcher):
             )
 
             message.author.timeout(
-                duration=600,
+                until=datetime.now(tz=timezone.utc) + timedelta(minutes=10),
                 reason="Detected as bot by Bot Catcher plugin",
             )
 
