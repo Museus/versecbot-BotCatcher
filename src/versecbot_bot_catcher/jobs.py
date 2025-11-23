@@ -109,16 +109,18 @@ class DetectBots(Watcher):
                 message.author.id, list(self.data[message.author.id].values())
             )
 
-            # message.author.timeout(
-            #     duration=600,
-            #     reason=f"Detected as bot by Bot Catcher plugin",
-            # )
+            message.author.timeout(
+                duration=600,
+                reason="Detected as bot by Bot Catcher plugin",
+            )
 
             for channel_id in list(self.data[message.author.id].keys()):
                 logger.info(
-                    "Deleting message from user %s in channel %s",
+                    "Deleting message %s from %s <%s> in channel %s",
+                    message.id,
+                    message.author.name,
                     message.author.id,
-                    channel_id,
+                    message.channel.id,
                 )
 
                 last_message = self.data[message.author.id].get(channel_id)
@@ -127,5 +129,5 @@ class DetectBots(Watcher):
                         [last_message]
                     )
 
-                logger.debug("Deleting stored data for user %s", message.author.id)
-                del self.data[message.author.id]
+            logger.debug("Deleting stored data for user %s", message.author.id)
+            del self.data[message.author.id]
