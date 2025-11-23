@@ -6,6 +6,7 @@ from discord import Client, Message
 from versecbot_interface import Watcher
 
 from .settings import DetectBotSettings
+from .util import create_embed
 
 logger = getLogger("discord").getChild("versecbot.plugins.bot_catcher.detect_bots")
 
@@ -72,13 +73,12 @@ class DetectBots(Watcher):
 
         return channel_count >= self.channel_threshold
 
-    async def notify_channel(self, user_id: int, channel_ids: list[int]):
+    async def notify_channel(self, user_id: int, messages: list[int]):
         """Notify notification_channel about a detected bot."""
         channel = self.client.get_channel(self.notification_channel_id)
-        await channel.send(
-            f"User <@{user_id}> detected as bot, sent messages to {len(channel_ids)} channels within {self.time_threshold} seconds:\n"
-            + ", ".join(f"<#{channel_id}>\n" for channel_id in channel_ids)
-        )
+        embeds = [create_embed(msg) for msg in messages]
+        notification_message = f"User <@{user_id}> detected as bot, sent messages to {len(messages)} channels within {self.time_threshold} seconds"
+        return await channel.send(notification_message, embeds=embeds)
 
     def should_act(self, message: Message) -> bool:
         if not super().should_act(message):
@@ -106,12 +106,12 @@ class DetectBots(Watcher):
             )
 
             await self.notify_channel(
-                message.author.id, list(self.data[message.author.id].keys())
+                message.author.id, list(self.data[message.author.id].values())
             )
 
             # message.author.timeout(
             #     duration=600,
-            #     reason=f"Detected as bot by Bot Catcher plugin, sent messages to {len(self.data[message.author.id].keys())} channels within {self.time_threshold} seconds",
+            #     reason=f"Detected as bot by Bot Catcher plugin",
             # )
 
             for channel_id in list(self.data[message.author.id].keys()):
