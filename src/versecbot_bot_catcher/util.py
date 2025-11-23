@@ -10,6 +10,6 @@ def create_embed(message: discord.Message) -> discord.Embed:
         name=message.author.display_name, icon_url=message.author.display_avatar.url
     )
 
-    message_embed.set_footer(text=f"Sent in <#{message.channel.id}>")
+    message_embed.set_footer(text=f"Sent in {message.channel.name}")
 
     return message_embed
