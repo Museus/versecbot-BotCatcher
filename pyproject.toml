@@ -4,7 +4,7 @@
 
 [project]
     name = "versecbot_bot_catcher"
-    version = "0.3.0"
+    version = "1.1.1"
     authors = [{ name = "Museus", email = "versecbot@museus.dev" }]
     description = "VerSecBot plugin to detect and timeout spam bots"
     readme = "README.md"
@@ -17,7 +17,7 @@
     dependencies = [
         "discord-py>=2,<3",
         "pydantic_settings>=2,<3",
-        "versecbot_interface@git+https://github.com/Museus/versecbot-interface.git@v0.3",
+        "versecbot_interface>=0.3",
     ]
 
     license = "MIT"
